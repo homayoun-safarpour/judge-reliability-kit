@@ -1,0 +1,722 @@
+{
+  "REC000": {
+    "gpt-4o-judge": [
+      "exclude",
+      "exclude",
+      "exclude",
+      "exclude"
+    ],
+    "claude-judge": [
+      "exclude",
+      "exclude",
+      "exclude",
+      "exclude"
+    ],
+    "llama-70b-judge": [
+      "exclude",
+      "exclude",
+      "exclude",
+      "exclude"
+    ]
+  },
+  "REC001": {
+    "gpt-4o-judge": [
+      "include",
+      "include",
+      "include",
+      "include"
+    ],
+    "claude-judge": [
+      "include",
+      "include",
+      "include",
+      "include"
+    ],
+    "llama-70b-judge": [
+      "include",
+      "include",
+      "include",
+      "include"
+    ]
+  },
+  "REC002": {
+    "gpt-4o-judge": [
+      "include",
+      "include",
+      "include",
+      "include"
+    ],
+    "claude-judge": [
+      "include",
+      "include",
+      "include",
+      "include"
+    ],
+    "llama-70b-judge": [
+      "include",
+      "include",
+      "include",
+      "include"
+    ]
+  },
+  "REC003": {
+    "gpt-4o-judge": [
+      "exclude",
+      "exclude",
+      "exclude",
+      "exclude"
+    ],
+    "claude-judge": [
+      "exclude",
+      "exclude",
+      "exclude",
+      "exclude"
+    ],
+    "llama-70b-judge": [
+      "exclude",
+      "exclude",
+      "exclude",
+      "exclude"
+    ]
+  },
+  "REC004": {
+    "gpt-4o-judge": [
+      "include",
+      "include",
+      "include",
+      "include"
+    ],
+    "claude-judge": [
+      "include",
+      "include",
+      "include",
+      "include"
+    ],
+    "llama-70b-judge": [
+      "include",
+      "include",
+      "include",
+      "include"
+    ]
+  },
+  "REC005": {
+    "gpt-4o-judge": [
+      "include",
+      "include",
+      "include",
+      "include"
+    ],
+    "claude-judge": [
+      "include",
+      "include",
+      "include",
+      "include"
+    ],
+    "llama-70b-judge": [
+      "include",
+      "include",
+      "include",
+      "include"
+    ]
+  },
+  "REC006": {
+    "gpt-4o-judge": [
+      "exclude",
+      "exclude",
+      "exclude",
+      "exclude"
+    ],
+    "claude-judge": [
+      "exclude",
+      "exclude",
+      "exclude",
+      "exclude"
+    ],
+    "llama-70b-judge": [
+      "exclude",
+      "exclude",
+      "exclude",
+      "exclude"
+    ]
+  },
+  "REC007": {
+    "gpt-4o-judge": [
+      "include",
+      "include",
+      "include",
+      "include"
+    ],
+    "claude-judge": [
+      "include",
+      "include",
+      "include",
+      "include"
+    ],
+    "llama-70b-judge": [
+      "include",
+      "include",
+      "include",
+      "include"
+    ]
+  },
+  "REC008": {
+    "gpt-4o-judge": [
+      "include",
+      "include",
+      "include",
+      "include"
+    ],
+    "claude-judge": [
+      "include",
+      "include",
+      "include",
+      "include"
+    ],
+    "llama-70b-judge": [
+      "include",
+      "include",
+      "include",
+      "include"
+    ]
+  },
+  "REC009": {
+    "gpt-4o-judge": [
+      "exclude",
+      "exclude",
+      "exclude",
+      "exclude"
+    ],
+    "claude-judge": [
+      "exclude",
+      "exclude",
+      "exclude",
+      "exclude"
+    ],
+    "llama-70b-judge": [
+      "exclude",
+      "exclude",
+      "exclude",
+      "exclude"
+    ]
+  },
+  "REC010": {
+    "gpt-4o-judge": [
+      "include",
+      "include",
+      "include",
+      "include"
+    ],
+    "claude-judge": [
+      "include",
+      "include",
+      "include",
+      "include"
+    ],
+    "llama-70b-judge": [
+      "include",
+      "include",
+      "include",
+      "include"
+    ]
+  },
+  "REC011": {
+    "gpt-4o-judge": [
+      "include",
+      "include",
+      "include",
+      "include"
+    ],
+    "claude-judge": [
+      "include",
+      "include",
+      "include",
+      "include"
+    ],
+    "llama-70b-judge": [
+      "include",
+      "include",
+      "include",
+      "include"
+    ]
+  },
+  "REC012": {
+    "gpt-4o-judge": [
+      "exclude",
+      "exclude",
+      "exclude",
+      "exclude"
+    ],
+    "claude-judge": [
+      "exclude",
+      "exclude",
+      "exclude",
+      "exclude"
+    ],
+    "llama-70b-judge": [
+      "exclude",
+      "exclude",
+      "exclude",
+      "exclude"
+    ]
+  },
+  "REC013": {
+    "gpt-4o-judge": [
+      "include",
+      "include",
+      "include",
+      "include"
+    ],
+    "claude-judge": [
+      "include",
+      "include",
+      "include",
+      "include"
+    ],
+    "llama-70b-judge": [
+      "include",
+      "include",
+      "include",
+      "include"
+    ]
+  },
+  "REC014": {
+    "gpt-4o-judge": [
+      "exclude",
+      "exclude",
+      "exclude",
+      "include"
+    ],
+    "claude-judge": [
+      "include",
+      "exclude",
+      "include",
+      "include"
+    ],
+    "llama-70b-judge": [
+      "exclude",
+      "exclude",
+      "include",
+      "include"
+    ]
+  },
+  "REC015": {
+    "gpt-4o-judge": [
+      "include",
+      "exclude",
+      "exclude",
+      "include"
+    ],
+    "claude-judge": [
+      "include",
+      "include",
+      "include",
+      "include"
+    ],
+    "llama-70b-judge": [
+      "include",
+      "include",
+      "include",
+      "exclude"
+    ]
+  },
+  "REC016": {
+    "gpt-4o-judge": [
+      "exclude",
+      "exclude",
+      "include",
+      "include"
+    ],
+    "claude-judge": [
+      "exclude",
+      "exclude",
+      "include",
+      "include"
+    ],
+    "llama-70b-judge": [
+      "exclude",
+      "exclude",
+      "exclude",
+      "include"
+    ]
+  },
+  "REC017": {
+    "gpt-4o-judge": [
+      "exclude",
+      "exclude",
+      "include",
+      "exclude"
+    ],
+    "claude-judge": [
+      "include",
+      "include",
+      "include",
+      "exclude"
+    ],
+    "llama-70b-judge": [
+      "include",
+      "exclude",
+      "exclude",
+      "include"
+    ]
+  },
+  "REC018": {
+    "gpt-4o-judge": [
+      "include",
+      "include",
+      "include",
+      "include"
+    ],
+    "claude-judge": [
+      "include",
+      "exclude",
+      "exclude",
+      "exclude"
+    ],
+    "llama-70b-judge": [
+      "exclude",
+      "include",
+      "include",
+      "exclude"
+    ]
+  },
+  "REC019": {
+    "gpt-4o-judge": [
+      "exclude",
+      "include",
+      "exclude",
+      "exclude"
+    ],
+    "claude-judge": [
+      "include",
+      "exclude",
+      "include",
+      "include"
+    ],
+    "llama-70b-judge": [
+      "include",
+      "include",
+      "include",
+      "include"
+    ]
+  },
+  "REC020": {
+    "gpt-4o-judge": [
+      "exclude",
+      "exclude",
+      "include",
+      "include"
+    ],
+    "claude-judge": [
+      "exclude",
+      "include",
+      "include",
+      "exclude"
+    ],
+    "llama-70b-judge": [
+      "exclude",
+      "include",
+      "exclude",
+      "exclude"
+    ]
+  },
+  "REC021": {
+    "gpt-4o-judge": [
+      "include",
+      "include",
+      "exclude",
+      "exclude"
+    ],
+    "claude-judge": [
+      "include",
+      "include",
+      "include",
+      "exclude"
+    ],
+    "llama-70b-judge": [
+      "include",
+      "include",
+      "include",
+      "include"
+    ]
+  },
+  "REC022": {
+    "gpt-4o-judge": [
+      "exclude",
+      "exclude",
+      "include",
+      "exclude"
+    ],
+    "claude-judge": [
+      "exclude",
+      "exclude",
+      "include",
+      "include"
+    ],
+    "llama-70b-judge": [
+      "include",
+      "include",
+      "include",
+      "include"
+    ]
+  },
+  "REC023": {
+    "gpt-4o-judge": [
+      "exclude",
+      "exclude",
+      "exclude",
+      "include"
+    ],
+    "claude-judge": [
+      "exclude",
+      "include",
+      "exclude",
+      "include"
+    ],
+    "llama-70b-judge": [
+      "include",
+      "exclude",
+      "include",
+      "include"
+    ]
+  },
+  "REC024": {
+    "gpt-4o-judge": [
+      "include",
+      "include",
+      "include",
+      "include"
+    ],
+    "claude-judge": [
+      "exclude",
+      "exclude",
+      "exclude",
+      "exclude"
+    ],
+    "llama-70b-judge": [
+      "borderline",
+      "borderline",
+      "borderline",
+      "borderline"
+    ]
+  },
+  "REC025": {
+    "gpt-4o-judge": [
+      "include",
+      "include",
+      "include",
+      "include"
+    ],
+    "claude-judge": [
+      "exclude",
+      "exclude",
+      "exclude",
+      "exclude"
+    ],
+    "llama-70b-judge": [
+      "borderline",
+      "borderline",
+      "borderline",
+      "borderline"
+    ]
+  },
+  "REC026": {
+    "gpt-4o-judge": [
+      "include",
+      "include",
+      "include",
+      "include"
+    ],
+    "claude-judge": [
+      "exclude",
+      "exclude",
+      "exclude",
+      "exclude"
+    ],
+    "llama-70b-judge": [
+      "borderline",
+      "borderline",
+      "borderline",
+      "borderline"
+    ]
+  },
+  "REC027": {
+    "gpt-4o-judge": [
+      "include",
+      "include",
+      "include",
+      "include"
+    ],
+    "claude-judge": [
+      "exclude",
+      "exclude",
+      "exclude",
+      "exclude"
+    ],
+    "llama-70b-judge": [
+      "borderline",
+      "borderline",
+      "borderline",
+      "borderline"
+    ]
+  },
+  "REC028": {
+    "gpt-4o-judge": [
+      "include",
+      "include",
+      "include",
+      "include"
+    ],
+    "claude-judge": [
+      "exclude",
+      "exclude",
+      "exclude",
+      "exclude"
+    ],
+    "llama-70b-judge": [
+      "borderline",
+      "borderline",
+      "borderline",
+      "borderline"
+    ]
+  },
+  "REC029": {
+    "gpt-4o-judge": [
+      "include",
+      "include",
+      "include",
+      "include"
+    ],
+    "claude-judge": [
+      "exclude",
+      "exclude",
+      "exclude",
+      "exclude"
+    ],
+    "llama-70b-judge": [
+      "borderline",
+      "borderline",
+      "borderline",
+      "borderline"
+    ]
+  },
+  "REC030": {
+    "gpt-4o-judge": [
+      "include",
+      "include",
+      "include",
+      "include"
+    ],
+    "claude-judge": [
+      "exclude",
+      "exclude",
+      "exclude",
+      "exclude"
+    ],
+    "llama-70b-judge": [
+      "borderline",
+      "borderline",
+      "borderline",
+      "borderline"
+    ]
+  },
+  "REC031": {
+    "gpt-4o-judge": [
+      "include",
+      "include",
+      "include",
+      "include"
+    ],
+    "claude-judge": [
+      "exclude",
+      "exclude",
+      "exclude",
+      "exclude"
+    ],
+    "llama-70b-judge": [
+      "borderline",
+      "borderline",
+      "borderline",
+      "borderline"
+    ]
+  },
+  "REC032": {
+    "gpt-4o-judge": [
+      "include",
+      "include",
+      "include",
+      "include"
+    ],
+    "claude-judge": [
+      "exclude",
+      "exclude",
+      "exclude",
+      "exclude"
+    ],
+    "llama-70b-judge": [
+      "borderline",
+      "borderline",
+      "borderline",
+      "borderline"
+    ]
+  },
+  "REC033": {
+    "gpt-4o-judge": [
+      "include",
+      "include",
+      "include",
+      "include"
+    ],
+    "claude-judge": [
+      "exclude",
+      "exclude",
+      "exclude",
+      "exclude"
+    ],
+    "llama-70b-judge": [
+      "borderline",
+      "borderline",
+      "borderline",
+      "borderline"
+    ]
+  },
+  "REC034": {
+    "gpt-4o-judge": [
+      "include",
+      "include",
+      "include",
+      "include"
+    ],
+    "claude-judge": [
+      "exclude",
+      "exclude",
+      "exclude",
+      "exclude"
+    ],
+    "llama-70b-judge": [
+      "borderline",
+      "borderline",
+      "borderline",
+      "borderline"
+    ]
+  },
+  "REC035": {
+    "gpt-4o-judge": [
+      "include",
+      "include",
+      "include",
+      "include"
+    ],
+    "claude-judge": [
+      "exclude",
+      "exclude",
+      "exclude",
+      "exclude"
+    ],
+    "llama-70b-judge": [
+      "borderline",
+      "borderline",
+      "borderline",
+      "borderline"
+    ]
+  }
+}

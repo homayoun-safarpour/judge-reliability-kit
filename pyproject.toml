@@ -1,0 +1,43 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "judge-reliability-kit"
+version = "0.1.0"
+description = "Decide whether an LLM judge panel can be trusted - and whether to fix the rubric or the task."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Homayoun Safarpour" }]
+keywords = ["llm-as-a-judge", "evaluation", "reliability", "inter-rater-agreement", "ai-evaluation", "bias"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = ["numpy>=1.24"]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.4", "ruff>=0.4"]
+
+[project.scripts]
+judgekit = "judgekit.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/homayoun-safarpour/judge-reliability-kit"
+Issues = "https://github.com/homayoun-safarpour/judge-reliability-kit/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/judgekit"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
