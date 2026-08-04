@@ -10,7 +10,7 @@
 
 ## The problem
 
-You built a panel of LLM judges. Each one looks competent when you read its outputs. Then you measure inter-judge agreement and get a Fleiss kappa of 0.20 - barely above chance.
+You built a panel of LLM judges. Each one looks competent when you read its outputs. Then you measure inter-judge agreement and get a Fleiss kappa of 0.20, barely above chance.
 
 Now what?
 
@@ -75,8 +75,8 @@ for item in result.items:
     print(item.item_id, item.verdict, "->", item.actionable)
 ```
 
-REC001: every judge repeats itself perfectly and they still disagree -> **rubric underspecified**.
-REC002: every judge contradicts itself -> **item ambiguous**.
+REC001: every judge repeats itself perfectly and they still disagree → **rubric underspecified**.
+REC002: every judge contradicts itself → **item ambiguous**.
 
 Same kappa. Different diagnosis. Different fix.
 
@@ -102,11 +102,11 @@ Exits non-zero when the panel is below a trustworthy kappa, so you can gate a pi
 | `fleiss_kappa` | fixed panel, every judge rates every item |
 | `cohen_kappa` | exactly two judges |
 | `krippendorff_alpha` | judges skipped items, or you are sampling (handles `None`) |
-| `pairwise_kappas` | **always** - the panel mean hides whether two judges are locked together while a third is orthogonal |
+| `pairwise_kappas` | **always**. The panel mean hides whether two judges are locked together while a third is orthogonal |
 | `percent_agreement` | only as a foil, to show how misleading it is |
 | `interpret_kappa` | turns a number into what it *licenses you to claim* |
 
-The imbalance trap is asserted as a test: two judges who both say "exclude" 96% of the time agree 96% of the time and share **nothing** - `percent_agreement` reads 0.96 while `cohen_kappa` goes negative.
+The imbalance trap is asserted as a test: two judges who both say "exclude" 96% of the time agree 96% of the time and share **nothing**. `percent_agreement` reads 0.96 while `cohen_kappa` goes negative.
 
 ### Cause decomposition (`judgekit.decompose`)
 
@@ -132,7 +132,7 @@ Model-agnostic controlled perturbations. Pass your own `score_fn`; the probe han
 python examples/worked_example.py
 ```
 
-A 36-record screening panel with three LLM judges. Real output:
+A 36-record binary-label panel with three LLM judges. Real output:
 
 ```
 WHAT A BARE KAPPA TELLS YOU
@@ -165,7 +165,7 @@ One number became a work plan: 12 records need a rubric fix, 10 need to leave th
 
 ### Majority-vote inflation
 
-`decompose` reports the panel kappa twice - once on a single pass, once after majority-voting the replicates - because the gap between them is itself a finding:
+`decompose` reports the panel kappa twice (once on a single pass, once after majority-voting the replicates) because the gap between them is itself a finding:
 
 ```python
 result.single_pass_kappa        # what you would have measured without replication
@@ -177,9 +177,9 @@ A large positive inflation is a **warning, not a win**. It means your headline a
 
 ## Why this exists
 
-Built for production LLM evaluation panels that look competent judge-by-judge but disagree as a group. A low kappa alone does not say whether to rewrite the rubric or replicate ambiguous items — and teams keep picking the wrong fix. This kit separates those failure modes with a named, tested decomposition.
+Production LLM evaluation panels often look competent judge-by-judge and still disagree as a group. A low kappa alone does not say whether to rewrite the rubric or replicate ambiguous items, and teams keep picking the wrong fix. This kit separates those failure modes with a named, tested decomposition (`tests/test_decompose.py::test_the_two_causes_produce_the_same_kappa_but_different_verdicts`).
 
-Regulatory context: the EU AI Act's high-risk conformity assessment obligations make documented evaluation reliability - not just evaluation results - a compliance artefact. "We used an LLM judge" is not an answer to "how do you know your evaluation is sound".
+Regulatory context: the EU AI Act's high-risk conformity assessment obligations make documented evaluation reliability (not just evaluation results) a compliance artefact. "We used an LLM judge" is not an answer to "how do you know your evaluation is sound".
 
 ## Design commitments
 
@@ -206,4 +206,4 @@ Issues and PRs welcome. Run `ruff check src tests` and `pytest` before opening o
 
 ## License
 
-MIT - see [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).
