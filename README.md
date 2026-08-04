@@ -177,9 +177,7 @@ A large positive inflation is a **warning, not a win**. It means your headline a
 
 ## Why this exists
 
-Built while writing a systematic review of bias in generative AI, where a three-judge screening panel produced a kappa low enough to invalidate the screen - and no available tool could say whether the fault was in the records or in the criterion. The screening tag in that review turned out to be firing on the wrong feature entirely: it flagged a legal-framework proposal, a literature review, and a developer-ethics study as audio-to-video bias cases, because each contained the vocabulary the criterion keyed on.
-
-That is a rubric problem wearing an ambiguity costume. Telling them apart is the entire job.
+Built for production LLM evaluation panels that look competent judge-by-judge but disagree as a group. A low kappa alone does not say whether to rewrite the rubric or replicate ambiguous items — and teams keep picking the wrong fix. This kit separates those failure modes with a named, tested decomposition.
 
 Regulatory context: the EU AI Act's high-risk conformity assessment obligations make documented evaluation reliability - not just evaluation results - a compliance artefact. "We used an LLM judge" is not an answer to "how do you know your evaluation is sound".
 

@@ -1,9 +1,9 @@
-"""Worked example: a three-judge screening panel sitting at a low kappa.
+"""Worked example: a three-judge labeling panel sitting at a low kappa.
 
 Run:  python examples/worked_example.py
 
-The panel below is a realistic caricature of a systematic-review screening
-panel: three LLM judges deciding whether a record belongs in scope. The
+The panel below is a realistic caricature of a production LLM labeling
+panel: three judges deciding whether an item meets a criterion. The
 headline kappa is bad. The point of the example is that the headline kappa
 does not tell you what to DO about it - and the decomposition does.
 """
