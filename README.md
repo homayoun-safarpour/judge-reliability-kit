@@ -196,13 +196,15 @@ Issues and PRs welcome. Run `ruff check src tests` and `pytest` before opening o
 
 ```bibtex
 @software{safarpour_judge_reliability_kit_2026,
-  author  = {Safarpour, Homayoun},
+  author  = {Homayoun Safarpour},
   title   = {judge-reliability-kit: diagnosing why an LLM judge panel disagrees},
   year    = {2026},
   url     = {https://github.com/homayoun-safarpour/judge-reliability-kit},
   license = {MIT}
 }
 ```
+
+Author: Homayoun Safarpour · [LinkedIn](https://www.linkedin.com/in/homayoun-safarpour/)
 
 ## License
 
