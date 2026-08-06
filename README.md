@@ -130,7 +130,11 @@ Model-agnostic controlled perturbations. Pass your own `score_fn`; the probe han
 
 ```bash
 python examples/worked_example.py
+python examples/ambiguous_item_demo.py
 ```
+
+The ambiguous demo prints `verdict=item_ambiguous` for hedge-heavy item wording
+(see `examples/ambiguous_item_output.txt`).
 
 A 36-record binary-label panel with three LLM judges. Real output:
 
