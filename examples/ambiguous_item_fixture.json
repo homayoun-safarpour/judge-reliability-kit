@@ -1,0 +1,18 @@
+{
+  "description": "Synthetic screening items. AMB_DEMO_001 has intentionally ambiguous wording. CLEAN_DEMO_001 is stable control so judges are not labeled broken globally. Public-safe demo only.",
+  "focus_item_id": "AMB_DEMO_001",
+  "item_text": "Include this record if the system is somewhat relevant to fairness OR if it might touch evaluation in a broad sense, unless the authors only discuss general ML without being clearly about judges.",
+  "why_ambiguous": "Hedges (somewhat, might, broad sense, unless, clearly) let honest judges disagree on the same text without a broken rubric.",
+  "ratings": {
+    "CLEAN_DEMO_001": {
+      "gpt-4o-judge": ["exclude", "exclude", "exclude", "exclude"],
+      "claude-judge": ["exclude", "exclude", "exclude", "exclude"],
+      "llama-70b-judge": ["exclude", "exclude", "exclude", "exclude"]
+    },
+    "AMB_DEMO_001": {
+      "gpt-4o-judge": ["include", "exclude", "include", "exclude"],
+      "claude-judge": ["exclude", "include", "exclude", "include"],
+      "llama-70b-judge": ["include", "include", "exclude", "exclude"]
+    }
+  }
+}

@@ -1,0 +1,6 @@
+item_id=AMB_DEMO_001
+verdict=item_ambiguous
+self_consistency=0.33
+cross_judge_consensus=0.33
+actionable=Change the TASK: allow abstain, route to human, or exclude from scoring.
+modal_kappa=0.250
