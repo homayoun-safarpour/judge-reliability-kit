@@ -1,12 +1,12 @@
-# Interview talking points — judge-reliability-kit
+# Interview talking points : judge-reliability-kit
 
 Five CLI-backed points for a technical screen (no resume recap).
 
-- **`python examples/ambiguous_item_demo.py`** — one intentionally ambiguous item; decomposition returns `item_ambiguous` so you fix the task, not rewrite a fine rubric.
-- **`python examples/worked_example.py`** — realistic low-kappa panel; prints how replication separates item ambiguity from rubric underspecification from broken judges.
-- **`judgekit report examples/judge_panel_ratings.json -o examples/report.md`** — markdown report with Fleiss kappa and per-item verdicts you can attach to a labeling review.
-- **`judgekit report ratings.json --self-consistency-threshold 0.8 --consensus-threshold 0.6`** — tune gates when panels use abstain labels or fewer replicates than the defaults.
-- **Non-zero exit when `inter_judge_kappa < 0.6`** — `judgekit report` returns exit `1` on an untrusted panel so CI can gate without parsing prose.
+- **`python examples/ambiguous_item_demo.py`** : one intentionally ambiguous item; decomposition returns `item_ambiguous` so you fix the task, not rewrite a fine rubric.
+- **`python examples/worked_example.py`** : realistic low-kappa panel; prints how replication separates item ambiguity from rubric underspecification from broken judges.
+- **`judgekit report examples/judge_panel_ratings.json -o examples/report.md`** : markdown report with Fleiss kappa and per-item verdicts you can attach to a labeling review.
+- **`judgekit report ratings.json --self-consistency-threshold 0.8 --consensus-threshold 0.6`** : tune gates when panels use abstain labels or fewer replicates than the defaults.
+- **Non-zero exit when `inter_judge_kappa < 0.6`** : `judgekit report` returns exit `1` on an untrusted panel so CI can gate without parsing prose.
 
 ## Three questions
 
