@@ -192,6 +192,21 @@ Regulatory context: the EU AI Act's high-risk conformity assessment obligations 
 - **Every claim is a test.** `tests/test_decompose.py::test_the_two_causes_produce_the_same_kappa_but_different_verdicts` asserts the central claim of the package directly.
 - **Errors that teach.** Passing single-pass ratings raises a message explaining *why* replication is required rather than a `KeyError`.
 
+## Field alignment
+
+Meta-eval culture (RewardBench / JudgeBench / evalstats-style work) treats the **judge as the system under test**. This kit is the small offline cousin: decompose a bad panel kappa into a named fix. Claim boundaries and fixtures: [docs/RELIABILITY_CARD.md](docs/RELIABILITY_CARD.md).
+
+## Fail-closed demo
+
+Ambiguous items should surface as `item_ambiguous`, not a quiet average:
+
+```bash
+python examples/ambiguous_item_demo.py
+# or: judgekit report examples/ambiguous_item_fixture.json -o examples/ambiguous_item_output.txt
+```
+
+Gate a pipeline when panel kappa is untrustworthy (`judgekit report` exits non-zero). See the CI snippet under Command line.
+
 ## Contributing
 
 Issues and PRs welcome. Run `ruff check src tests` and `pytest` before opening one.
