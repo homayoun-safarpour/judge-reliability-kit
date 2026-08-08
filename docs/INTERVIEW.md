@@ -19,6 +19,11 @@ Five CLI-backed points for a technical screen (no resume recap).
 3. **How does this relate to judge-drift-sentinel?**  
    This kit diagnoses panel design on static ratings. Sentinel freezes human anchors and detects judge drift across runs. Export panel JSON through `drift-sentinel import-judgekit` when both matter.
 
+## Related instruments
+
+- [judge-field-guide](https://github.com/homayoun-safarpour/judge-field-guide) - CI-tested registry of the LLM-judge tool ecosystem (not a judge implementation; use it to discover peers and keep links from rotting).
+- [judge-drift-sentinel](https://github.com/homayoun-safarpour/judge-drift-sentinel) - judge vs system drift on frozen anchors.
+
 ## One limitation
 
 The bundled examples are small caricatures. Production panels need enough replicates per item for stable self-consistency estimates; the thresholds are starting points, not calibrated for your label space.
