@@ -22,7 +22,7 @@ Five CLI-backed points for a technical screen (no resume recap).
 ## Related instruments
 
 - [judge-field-guide](https://github.com/homayoun-safarpour/judge-field-guide) - CI-tested registry of the LLM-judge tool ecosystem (not a judge implementation; use it to discover peers and keep links from rotting).
-- [judge-drift-sentinel](https://github.com/homayoun-safarpour/judge-drift-sentinel) - judge vs system drift on frozen anchors.
+- [judge-drift-sentinel](https://github.com/homayoun-safarpour/judge-drift-sentinel) - judge vs system drift on frozen anchors; multi-run history fixture at `examples/drifting/`.
 
 ## One limitation
 
