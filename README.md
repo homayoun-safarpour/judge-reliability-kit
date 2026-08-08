@@ -200,6 +200,11 @@ Regulatory context: the EU AI Act's high-risk conformity assessment obligations 
 
 Meta-eval culture (RewardBench / JudgeBench / evalstats-style work) treats the **judge as the system under test**. This kit is the small offline cousin: decompose a bad panel kappa into a named fix. Claim boundaries and fixtures: [docs/RELIABILITY_CARD.md](docs/RELIABILITY_CARD.md).
 
+## Related instruments
+
+- [judge-drift-sentinel](https://github.com/homayoun-safarpour/judge-drift-sentinel) - judge vs system drift on a frozen anchor set
+- [judge-field-guide](https://github.com/homayoun-safarpour/judge-field-guide) - link-checked map of the LLM-judge tool ecosystem
+
 ## Fail-closed demo
 
 Ambiguous items should surface as `item_ambiguous`, not a quiet average:
