@@ -1,4 +1,4 @@
-# judge-reliability-kit
+﻿# judge-reliability-kit
 
 **A low kappa tells you your LLM judge panel is broken. It does not tell you whether to fix the rubric or the task. This tells you which.**
 
@@ -50,6 +50,8 @@ pip install -e ".[dev]"
 ```
 
 ## Quickstart
+
+Interview pack: [docs/INTERVIEW.md](docs/INTERVIEW.md).
 
 Claim boundaries: [docs/RELIABILITY_CARD.md](docs/RELIABILITY_CARD.md).
 
