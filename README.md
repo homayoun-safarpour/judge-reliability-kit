@@ -51,6 +51,8 @@ pip install -e ".[dev]"
 
 ## Quickstart
 
+Claim boundaries: [docs/RELIABILITY_CARD.md](docs/RELIABILITY_CARD.md).
+
 ```python
 from judgekit import decompose, markdown_report
 
