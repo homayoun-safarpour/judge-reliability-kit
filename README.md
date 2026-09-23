@@ -1,10 +1,26 @@
-﻿# judge-reliability-kit
+﻿# judgekit
 
 **A low kappa tells you your LLM judge panel is broken. It does not tell you whether to fix the rubric or the task. This tells you which.**
 
 [![CI](https://github.com/homayoun-safarpour/judge-reliability-kit/actions/workflows/ci.yml/badge.svg)](https://github.com/homayoun-safarpour/judge-reliability-kit/actions/workflows/ci.yml)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+
+Diagnose why an LLM judge panel disagrees: fix the rubric, or fix the task.
+
+```bash
+git clone https://github.com/homayoun-safarpour/judge-reliability-kit
+cd judge-reliability-kit && pip install -e .
+judgekit report examples/judge_panel_ratings.json -o reliability.md
+```
+
+It exits 1, because this example panel is not trustworthy, and `reliability.md` opens with the diagnosis. Real output:
+
+```
+- **Inter-judge Fleiss kappa:** 0.242 - fair - a shared construct may exist but the rubric is not carrying it
+- **Mean intra-judge self-consistency:** 0.867
+- **Dominant cause of disagreement:** `rubric_underspecified`
+```
 
 ---
 
@@ -37,11 +53,13 @@ That is the whole idea. This package implements it, plus the agreement statistic
 
 ## Install
 
+Not on PyPI yet. Install from GitHub:
+
 ```bash
-pip install judge-reliability-kit
+pip install git+https://github.com/homayoun-safarpour/judge-reliability-kit
 ```
 
-or from source:
+or from source, which also gives you the examples:
 
 ```bash
 git clone https://github.com/homayoun-safarpour/judge-reliability-kit
