@@ -1,6 +1,8 @@
-﻿# judgekit
+﻿# judge-reliability-kit
 
 **A low kappa tells you your LLM judge panel is broken. It does not tell you whether to fix the rubric or the task. This tells you which.**
+
+Homayoun Safarpour
 
 [![CI](https://github.com/homayoun-safarpour/judge-reliability-kit/actions/workflows/ci.yml/badge.svg)](https://github.com/homayoun-safarpour/judge-reliability-kit/actions/workflows/ci.yml)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
