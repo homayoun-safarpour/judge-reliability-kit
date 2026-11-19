@@ -1,4 +1,4 @@
-# LOOP_STATE — judge-reliability-kit
+# LOOP_STATE: judge-reliability-kit
 
 Focus week 2026-09-29 to 2026-10-05: live-stack first-screen restyle. No new public repo.
 
