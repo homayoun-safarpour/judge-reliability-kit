@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "judge-reliability-kit"
+type: software
+authors:
+  - family-names: Safarpour
+    given-names: Homayoun
+    affiliation: "University of Limerick"
+repository-code: "https://github.com/homayoun-safarpour/judge-reliability-kit"
+url: "https://homayoun-safarpour.github.io"
+license: MIT
+version: "0.1.0"
+abstract: "Decide whether an LLM judge panel can be trusted - and whether to fix the rubric or the task."
+keywords:
+  - "ai-reliability"
+  - "cohen-kappa"
+  - "evaluation"
+  - "llm-as-judge"
+  - "llm-evaluation"
+  - "python"
