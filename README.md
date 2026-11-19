@@ -110,7 +110,7 @@ Same kappa. Different diagnosis. Different fix.
 judgekit report ratings.json -o reliability.md
 ```
 
-Exits non-zero when the panel is below a trustworthy kappa, so you can gate a pipeline on it:
+Exit code 0: inter-judge Fleiss kappa is 0.6 or higher. Exit code 1: kappa is below 0.6. So you can gate a pipeline on it:
 
 ```yaml
 - name: Judge panel must be trustworthy before we ship scores

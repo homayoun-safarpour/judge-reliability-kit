@@ -1,4 +1,4 @@
-# Reliability card — judge-reliability-kit
+# Reliability card: judge-reliability-kit
 
 | Field | Value |
 | --- | --- |
