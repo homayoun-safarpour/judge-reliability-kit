@@ -6,7 +6,7 @@ Homayoun Safarpour
 
 [![CI](https://github.com/homayoun-safarpour/judge-reliability-kit/actions/workflows/ci.yml/badge.svg)](https://github.com/homayoun-safarpour/judge-reliability-kit/actions/workflows/ci.yml) [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/) [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-Diagnose why an LLM judge panel disagrees: fix the rubric, or fix the task.
+LLM-as-judge reliability: diagnose why an LLM judge panel disagrees, so you know whether to fix the rubric or the task.
 
 judge-reliability-kit is a Python package that reads repeated ratings from a panel of language-model judges and reports why the panel disagrees. We built it because a low kappa can come from ambiguous items or from an underspecified rubric, whereas the two causes need opposite fixes and give the same number. Given at least two ratings per judge per item, it compares how often each judge repeats itself with how often the judges agree, and gives every item one of four verdicts. It produces a Markdown report and exits 1 when the panel's Fleiss kappa is below 0.6, so that a CI job can refuse scores from an unreliable panel.
 
@@ -27,6 +27,10 @@ judgekit report examples/judge_panel_ratings.json
 ```
 
 Those are the first lines of the report it prints. The rest adds the share of each cause, the self-consistency of each judge and the contested items, as in [`examples/report.md`](examples/report.md). That command exits 1, because 0.242 is below 0.6. Add `-o reliability.md` to write the report to a file.
+
+![judge-reliability-kit: repeated judge ratings is checked by self-consistency vs agreement; the result is kappa 0.242 with exit 1](docs/readme-flow.svg)
+
+[How it works](#how-it-works) · [Results](#what-each-result-means) · [Limits](#limits) · [Interview pack](docs/INTERVIEW.md) · [Cite](#citation) · Part of [a small open stack for checking AI agents and their judges](https://homayoun-safarpour.github.io)
 
 ## What each result means
 
