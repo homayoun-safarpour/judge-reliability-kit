@@ -17,7 +17,13 @@ from .decompose import (
     ItemVerdict,
     decompose,
 )
-from .probes import ProbeResult, position_bias, self_enhancement_bias, verbosity_bias
+from .probes import (
+    ProbeResult,
+    position_bias,
+    scale_direction_bias,
+    self_enhancement_bias,
+    verbosity_bias,
+)
 from .report import markdown_report
 
 __version__ = "0.1.0"
@@ -40,6 +46,7 @@ __all__ = [
     "pairwise_kappas",
     "percent_agreement",
     "position_bias",
+    "scale_direction_bias",
     "self_enhancement_bias",
     "verbosity_bias",
 ]

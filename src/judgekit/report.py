@@ -31,6 +31,15 @@ _NEXT_STEP = {
 }
 
 
+_PROBE_NOTE = {
+    "scale_direction": (
+        "`scale_direction`: the same items scored with the rubric scale reversed, "
+        "then mapped back. A flag means the score follows the size of the number "
+        "more than the rubric's meaning (arXiv:2611.25588)."
+    ),
+}
+
+
 def markdown_report(
     decomposition: Decomposition,
     probes: Sequence[ProbeResult] = (),
@@ -90,6 +99,9 @@ def markdown_report(
         for p in probes:
             out.append(f"| {p.name} | {p.effect:+.3f} | {'YES' if p.flagged else 'no'} | {p.detail} |")
         out.append("")
+        notes = [_PROBE_NOTE[name] for name in dict.fromkeys(p.name for p in probes) if name in _PROBE_NOTE]
+        if notes:
+            out += notes + [""]
 
     out += [
         "## Method note",

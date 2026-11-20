@@ -11,12 +11,18 @@ handles the perturbation, the pairing, and the statistics.
 
 from __future__ import annotations
 
-from collections.abc import Callable, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 
 import numpy as np
 
-__all__ = ["ProbeResult", "position_bias", "self_enhancement_bias", "verbosity_bias"]
+__all__ = [
+    "ProbeResult",
+    "position_bias",
+    "scale_direction_bias",
+    "self_enhancement_bias",
+    "verbosity_bias",
+]
 
 
 @dataclass(frozen=True)
@@ -36,6 +42,7 @@ class ProbeResult:
             "position": 0.05,
             "verbosity": 0.10,
             "self_enhancement": 0.05,
+            "scale_direction": 0.10,
         }.get(self.name, 0.05)
 
     def __str__(self) -> str:
@@ -146,4 +153,55 @@ def self_enhancement_bias(
         effect,
         len(own) + len(other),
         f"own={np.mean(own):.3f} vs other={np.mean(other):.3f} (n_own={len(own)})",
+    )
+
+
+def scale_direction_bias(
+    scores: Mapping[str, tuple[float, float]],
+    scale_min: float,
+    scale_max: float,
+) -> ProbeResult:
+    """Does the score follow the rubric's meaning, or the size of the number?
+
+    Works on recorded scores and calls no model. ``scores[item_id]`` is
+    ``(normal, reversed)``: the judge's score under the rubric as written, and
+    its score under the same rubric with the scale reversed (the best anchor
+    now carries ``scale_min`` instead of ``scale_max``). The reversed score is
+    mapped back with ``scale_max + scale_min - reversed``. A judge that follows
+    the rubric's meaning gives the same mapped score; a judge that favours the
+    top (or bottom) number whatever it means does not.
+
+    ``effect`` is the mean absolute gap between the normal and mapped-back
+    scores, divided by the scale width ``scale_max - scale_min``. It is flagged
+    at 0.10 or more, a tenth of the scale (0.4 points on a 1 to 5 scale).
+
+    After the scale-reversal probe in Kim et al., "Rubric Semantics or Numerical
+    Priors? Auditing Scale-Direction Bias in LLM Judges", arXiv:2611.25588. The
+    paper's floor normalisation against each judge's own run-to-run noise is not
+    applied here.
+    """
+    if not scores:
+        raise ValueError("no scores supplied")
+    if not scale_max > scale_min:
+        raise ValueError("scale_max must be greater than scale_min")
+    width = float(scale_max - scale_min)
+    gaps = []
+    for item_id, pair in scores.items():
+        if len(pair) != 2:
+            raise ValueError(f"item {item_id!r}: need (normal, reversed) scores")
+        normal, reversed_score = (float(v) for v in pair)
+        for value in (normal, reversed_score):
+            if not np.isfinite(value) or not scale_min <= value <= scale_max:
+                raise ValueError(
+                    f"item {item_id!r}: score {value} is outside {scale_min} to {scale_max}"
+                )
+        mapped_back = scale_max + scale_min - reversed_score
+        gaps.append(abs(normal - mapped_back))
+    mean_gap = float(np.mean(gaps))
+    return ProbeResult(
+        "scale_direction",
+        mean_gap / width,
+        len(gaps),
+        f"mean gap {mean_gap:.3f} points after mapping the reversed scale back, "
+        f"on a {scale_min:g} to {scale_max:g} scale",
     )
