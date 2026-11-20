@@ -1,84 +1,82 @@
 ﻿# judge-reliability-kit
 
-**A low kappa tells you your LLM judge panel is broken. It does not tell you whether to fix the rubric or the task. This tells you which.**
+**A low kappa says your LLM judge panel disagrees, but it does not say whether to fix the rubric or the task.**
 
 Homayoun Safarpour
 
-[![CI](https://github.com/homayoun-safarpour/judge-reliability-kit/actions/workflows/ci.yml/badge.svg)](https://github.com/homayoun-safarpour/judge-reliability-kit/actions/workflows/ci.yml)
-[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
-[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![CI](https://github.com/homayoun-safarpour/judge-reliability-kit/actions/workflows/ci.yml/badge.svg)](https://github.com/homayoun-safarpour/judge-reliability-kit/actions/workflows/ci.yml) [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/) [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-Diagnose why an LLM judge panel disagrees: fix the rubric, or fix the task.
+LLM-as-judge reliability: diagnose why an LLM judge panel disagrees, so you know whether to fix the rubric or the task.
+
+judge-reliability-kit is a Python package that reads repeated ratings from a panel of language-model judges and reports why the panel disagrees. We built it because a low kappa can come from ambiguous items or from an underspecified rubric, whereas the two causes need opposite fixes and give the same number. Given at least two ratings per judge per item, it compares how often each judge repeats itself with how often the judges agree, and gives every item one of four verdicts. It produces a Markdown report and exits 1 when the panel's Fleiss kappa is below 0.6, so that a CI job can refuse scores from an unreliable panel.
 
 ```bash
 git clone https://github.com/homayoun-safarpour/judge-reliability-kit
 cd judge-reliability-kit && pip install -e .
-judgekit report examples/judge_panel_ratings.json -o reliability.md
+judgekit report examples/judge_panel_ratings.json
 ```
 
-It exits 1, because this example panel is not trustworthy, and `reliability.md` opens with the diagnosis. Real output:
+```text
+# Judge panel reliability report
 
-```
+## Headline
+
 - **Inter-judge Fleiss kappa:** 0.242 - fair - a shared construct may exist but the rubric is not carrying it
 - **Mean intra-judge self-consistency:** 0.867
 - **Dominant cause of disagreement:** `rubric_underspecified`
 ```
 
----
+Those are the first lines of the report it prints. The rest adds the share of each cause, the self-consistency of each judge and the contested items, as in [`examples/report.md`](examples/report.md). That command exits 1, because 0.242 is below 0.6. Add `-o reliability.md` to write the report to a file.
+
+![judge-reliability-kit: repeated judge ratings is checked by self-consistency vs agreement; the result is kappa 0.242 with exit 1](docs/readme-flow.svg)
+
+[How it works](#how-it-works) · [Results](#what-each-result-means) · [Limits](#limits) · [Interview pack](docs/INTERVIEW.md) · [Cite](#citation) · Part of [a small open stack for checking AI agents and their judges](https://homayoun-safarpour.github.io)
+
+## What each result means
+
+| Result | Exit | Meaning |
+|---|---|---|
+| Fleiss kappa 0.6 or above | 0 | The judges agree with each other on a single pass. |
+| Fleiss kappa below 0.6 | 1 | The panel is not reliable yet. The report names the dominant cause and an action for each contested item. |
+| Bad input | 1 | Not a JSON object, one judge only, or one rating per judge per item. The command stops with an error message. |
+| Missing or wrong arguments | 2 | Usage error from the command line parser. |
+
+The exit code depends only on the single-pass kappa. Each item also gets a verdict in the report:
+
+| Verdict | What the numbers show | What to change |
+|---|---|---|
+| `clean` | Every judge repeats itself, and the judges agree | Nothing |
+| `item_ambiguous` | Mean self-consistency on the item is below 0.8 | The task: allow abstain, route to a human, or leave the item out of scoring |
+| `rubric_underspecified` | Every judge repeats itself, but cross-judge consensus is below 0.6 | The rubric: pin the disputed clause and add a boundary example |
+| `judge_unstable` | One judge's self-consistency across all items is below 0.4, and every item marked ambiguous is relabelled | The judge: lower the temperature, fix the prompt, or replace the model |
+
+Exit 0 shows that the judges agree with each other. It does not show that they agree with a human or that their labels are correct. The claim limits are in [`docs/RELIABILITY_CARD.md`](docs/RELIABILITY_CARD.md).
+
+## Use this when
+
+| Situation | Use judge-reliability-kit? |
+| --- | --- |
+| Each judge rated each item at least twice, and you want to know why the panel disagrees | Yes |
+| You want a CI step that fails when panel kappa falls below 0.6 | Yes |
+| You have one rating per judge per item | Only for the agreement functions such as `fleiss_kappa`. The diagnosis refuses single-pass input |
+| You want to know whether a judge changed over time against human anchors | No. Use [judge-drift-sentinel](https://github.com/homayoun-safarpour/judge-drift-sentinel) |
+| You want a model to grade answers | No. This package never calls a model. [judge-field-guide](https://github.com/homayoun-safarpour/judge-field-guide) lists tools that do |
+
+The package is not on PyPI yet. `pip install git+https://github.com/homayoun-safarpour/judge-reliability-kit` is the other way to install it, and `pip install -e ".[dev]"` adds pytest and ruff.
 
 ## The problem
 
-You built a panel of LLM judges. Each one looks competent when you read its outputs. Then you measure inter-judge agreement and get a Fleiss kappa of 0.20, barely above chance.
+A panel of LLM judges can look competent judge by judge and still reach a Fleiss kappa near 0.2 as a group. An ambiguous item has no single right label, so even one judge asked twice answers differently, and a new rubric will not help. With an underspecified rubric, each judge repeats itself but holds a different reading of the criterion, so more judges or more averaging will not help. A single kappa cannot tell the two apart. The test `tests/test_decompose.py::test_the_two_causes_produce_the_same_kappa_but_different_verdicts` builds one panel of each kind, both with a single-pass kappa below 0.25, and checks that they get opposite verdicts.
 
-Now what?
+## How it works
 
-There are two completely different reasons a panel disagrees, and they need **opposite fixes**:
+The two causes become separable once each judge scores each item more than once. For each item, `decompose` first measures how often each judge repeats its own label (self-consistency), then how often the judges' most common labels match (consensus), and gives the verdicts in the table above. Self-consistency comes first, because judges that flip a coin often share a most common label by chance, and checking consensus first would mark those items `clean` (`test_modal_labels_cannot_rescue_an_unstable_panel`).
 
-| cause | what is actually happening | the fix | the fix that will NOT work |
-| --- | --- | --- | --- |
-| **Item ambiguity** | The item genuinely has no single right label. Even one judge, asked twice, answers differently. | Change the **task**: add an abstain label, route to a human, exclude from scoring. | Rewriting the rubric. It is already fine. |
-| **Rubric underspecification** | Each judge is perfectly self-consistent, and each has settled on a *different* stable reading of your criterion. | Change the **rubric**: find the disputed clause, add a boundary example on each side. | Adding judges, or averaging harder. Three stable disagreements average to noise. |
-
-**A single kappa cannot distinguish them.** Both produce the same bad number. Pick the wrong fix and you will spend a month rewriting a rubric that was never the problem.
-
-## The insight
-
-The two causes become separable the moment you add **replication**: have each judge score each item more than once, independently.
-
-```
-low  intra-judge agreement                    ->  the item moves the judge     ->  ITEM AMBIGUITY
-high intra-judge, low inter-judge agreement   ->  stable judges, stably apart  ->  RUBRIC UNDERSPECIFIED
-low  intra-judge agreement everywhere         ->  the judge cannot repeat itself -> BROKEN JUDGE
-```
-
-That is the whole idea. This package implements it, plus the agreement statistics and bias probes you need around it.
-
-## Install
-
-Not on PyPI yet. Install from GitHub:
-
-```bash
-pip install git+https://github.com/homayoun-safarpour/judge-reliability-kit
-```
-
-or from source, which also gives you the examples:
-
-```bash
-git clone https://github.com/homayoun-safarpour/judge-reliability-kit
-cd judge-reliability-kit
-pip install -e ".[dev]"
-```
-
-## Quickstart
-
-Interview pack: [docs/INTERVIEW.md](docs/INTERVIEW.md).
-
-Claim boundaries: [docs/RELIABILITY_CARD.md](docs/RELIABILITY_CARD.md).
+From Python, `ratings[item_id][judge_id]` is the list of repeated labels from that judge:
 
 ```python
-from judgekit import decompose, markdown_report
+from judgekit import decompose
 
-# ratings[item_id][judge_id] = list of REPEATED labels from that judge
 ratings = {
     "REC001": {
         "gpt-4o":  ["include", "include", "include", "include"],
@@ -93,154 +91,58 @@ ratings = {
 }
 
 result = decompose(ratings)
-print(result.summary())
-
 for item in result.items:
-    print(item.item_id, item.verdict, "->", item.actionable)
+    print(item.item_id, item.verdict)
 ```
 
-REC001: every judge repeats itself perfectly and they still disagree → **rubric underspecified**.
-REC002: every judge contradicts itself → **item ambiguous**.
-
-Same kappa. Different diagnosis. Different fix.
-
-## Command line
-
-```bash
-judgekit report ratings.json -o reliability.md
+```text
+REC001 rubric_underspecified
+REC002 item_ambiguous
 ```
 
-Exit code 0: inter-judge Fleiss kappa is 0.6 or higher. Exit code 1: kappa is below 0.6. So you can gate a pipeline on it:
+In REC001 every judge repeats itself and they still disagree, whereas in REC002 every judge contradicts itself.
+
+`decompose` also reports the panel kappa on a single pass (`single_pass_kappa`) and after a majority vote over the repeats (`modal_kappa`). A large positive `majority_vote_inflation` means that the vote, and not the judges, produces the agreement.
+
+| Module | What it does |
+|---|---|
+| `judgekit.agreement` | `fleiss_kappa`, `cohen_kappa`, `krippendorff_alpha` (skipped items as `None`), `pairwise_kappas`, `percent_agreement`, and `interpret_kappa` (Landis and Koch bands) |
+| `judgekit.decompose` | Per-item verdicts with an action for each, plus intra-judge and inter-judge agreement for the panel |
+| `judgekit.probes` | `position_bias`, `verbosity_bias` and `self_enhancement_bias`, which change one thing that should not matter and call your own `score_fn` or `compare_fn` |
+| `judgekit.report` | `markdown_report`, which opens with the diagnosis and the action |
+| `judgekit.cli` | The `judgekit report` command and its exit code |
+
+`percent_agreement` is kept to show how it misleads: two judges who say "exclude" on 49 of 50 items agree on 96% of them, yet their Cohen kappa is below zero (`test_imbalance_trap_high_percent_low_kappa`).
+
+`python examples/worked_example.py` prints the bare kappa beside the decomposition, and `python examples/ambiguous_item_demo.py` shows one hedged item marked `item_ambiguous`. Both rewrite their output files in `examples/`.
+
+Interview pack: [docs/INTERVIEW.md](docs/INTERVIEW.md), five talking points and three questions.
+
+## Limits
+
+- It is not a judge or a benchmark. It never calls a model, so you bring the ratings, or a `score_fn` for the probes.
+- The thresholds are starting points and are not calibrated for your label space. Self-consistency (0.8) and consensus (0.6) are command-line flags, whereas the 0.6 kappa for the exit code is fixed in the code. The report lists at most 20 contested items.
+- The bundled panel is a small constructed example (36 items, three judges, four ratings each), not data from a production system.
+- `examples/ambiguous_item_fixture.json` holds the item text beside the ratings, so `judgekit report` cannot read it directly. Use `examples/ambiguous_item_demo.py` for it.
+- Its one runtime dependency is numpy, and it needs Python 3.10 or later. CI runs `ruff check src tests` and `pytest` on Python 3.10, 3.11 and 3.12.
+
+## Use it as a gate in CI
 
 ```yaml
-- name: Judge panel must be trustworthy before we ship scores
+- name: Judge panel must be reliable before we ship scores
   run: judgekit report data/panel_ratings.json -o reliability.md
 ```
 
-## What is in the box
+The step fails when the panel kappa is below 0.6, and `reliability.md` says which fix to make first.
 
-### Agreement statistics (`judgekit.agreement`)
+## Related tools
 
-| function | use it when |
-| --- | --- |
-| `fleiss_kappa` | fixed panel, every judge rates every item |
-| `cohen_kappa` | exactly two judges |
-| `krippendorff_alpha` | judges skipped items, or you are sampling (handles `None`) |
-| `pairwise_kappas` | **always**. The panel mean hides whether two judges are locked together while a third is orthogonal |
-| `percent_agreement` | only as a foil, to show how misleading it is |
-| `interpret_kappa` | turns a number into what it *licenses you to claim* |
-
-The imbalance trap is asserted as a test: two judges who both say "exclude" 96% of the time agree 96% of the time and share **nothing**. `percent_agreement` reads 0.96 while `cohen_kappa` goes negative.
-
-### Cause decomposition (`judgekit.decompose`)
-
-`decompose(ratings)` returns per-item verdicts (`clean`, `item_ambiguous`, `rubric_underspecified`, `judge_unstable`), each carrying a concrete action, plus panel-level intra- and inter-judge agreement.
-
-### Bias probes (`judgekit.probes`)
-
-Model-agnostic controlled perturbations. Pass your own `score_fn`; the probe handles the perturbation and the statistics.
-
-| probe | changes exactly one thing that should not matter |
-| --- | --- |
-| `position_bias` | the order the two answers are shown in |
-| `verbosity_bias` | pads the answer with content-free text |
-| `self_enhancement_bias` | who authored the answer being scored |
-
-### Reporting (`judgekit.report`)
-
-`markdown_report(...)` renders a report that leads with the diagnosis and the action, not the statistic.
-
-## Worked example
-
-```bash
-python examples/worked_example.py
-python examples/ambiguous_item_demo.py
-```
-
-The ambiguous demo prints `verdict=item_ambiguous` for hedge-heavy item wording
-(see `examples/ambiguous_item_output.txt`).
-
-A 36-record binary-label panel with three LLM judges. Real output:
-
-```
-WHAT A BARE KAPPA TELLS YOU
-Fleiss kappa = 0.242  (fair - a shared construct may exist but the rubric is not carrying it)
-Actionable next step: none. You know it is bad. You do not know why.
-
-WHAT REPLICATION TELLS YOU
-inter-judge Fleiss kappa (single pass): 0.242
-  same panel after majority vote:       0.245   (inflation +0.002)
-mean intra-judge self-consistency:      0.867
-
-disagreement attributed to:
-  item ambiguity            10  (28%)
-  rubric underspecified     12  (33%)
-  judge instability          0  (0%)
-  clean                     14  (39%)
-
-dominant cause: rubric_underspecified
-
-  REC014  [item_ambiguous]
-    self-consistency 0.44 | consensus 0.33
-    -> Change the TASK: allow abstain, route to human, or exclude from scoring.
-
-  REC024  [rubric_underspecified]
-    self-consistency 1.00 | consensus 0.00
-    -> Change the RUBRIC: pin the disputed clause, add a boundary example.
-```
-
-One number became a work plan: 12 records need a rubric fix, 10 need to leave the scored set, and 14 are fine. See [`examples/report.md`](examples/report.md) for the full generated report.
-
-### Majority-vote inflation
-
-`decompose` reports the panel kappa twice (once on a single pass, once after majority-voting the replicates) because the gap between them is itself a finding:
-
-```python
-result.single_pass_kappa        # what you would have measured without replication
-result.modal_kappa              # what you measure after majority vote
-result.majority_vote_inflation  # modal - single_pass
-```
-
-A large positive inflation is a **warning, not a win**. It means your headline agreement is being manufactured by aggregation over judges whose individual verdicts are not reproducible. Report both numbers or you are reporting a statistic about your voting rule, not about your judges.
-
-## Why this exists
-
-Production LLM evaluation panels often look competent judge-by-judge and still disagree as a group. A low kappa alone does not say whether to rewrite the rubric or replicate ambiguous items, and teams keep picking the wrong fix. This kit separates those failure modes with a named, tested decomposition (`tests/test_decompose.py::test_the_two_causes_produce_the_same_kappa_but_different_verdicts`).
-
-Regulatory context: the EU AI Act's high-risk conformity assessment obligations make documented evaluation reliability (not just evaluation results) a compliance artefact. "We used an LLM judge" is not an answer to "how do you know your evaluation is sound".
-
-## Design commitments
-
-- **No LLM dependency.** The package never calls a model. You bring ratings or a `score_fn`; it does statistics. This keeps it testable, deterministic, offline, and free.
-- **Numpy only.** One runtime dependency.
-- **Every claim is a test.** `tests/test_decompose.py::test_the_two_causes_produce_the_same_kappa_but_different_verdicts` asserts the central claim of the package directly.
-- **Errors that teach.** Passing single-pass ratings raises a message explaining *why* replication is required rather than a `KeyError`.
-
-## Field alignment
-
-Meta-eval culture (RewardBench / JudgeBench / evalstats-style work) treats the **judge as the system under test**. This kit is the small offline cousin: decompose a bad panel kappa into a named fix. Claim boundaries and fixtures: [docs/RELIABILITY_CARD.md](docs/RELIABILITY_CARD.md).
-
-## Related instruments
-
-- [judge-drift-sentinel](https://github.com/homayoun-safarpour/judge-drift-sentinel) - judge vs system drift on a frozen anchor set
-- [judge-field-guide](https://github.com/homayoun-safarpour/judge-field-guide) - link-checked map of the LLM-judge tool ecosystem
-
-## Fail-closed demo
-
-Ambiguous items should surface as `item_ambiguous`, not a quiet average:
-
-```bash
-python examples/ambiguous_item_demo.py
-# or: judgekit report examples/ambiguous_item_fixture.json -o examples/ambiguous_item_output.txt
-```
-
-Gate a pipeline when panel kappa is untrustworthy (`judgekit report` exits non-zero). See the CI snippet under Command line.
-
-## Contributing
-
-Issues and PRs welcome. Run `ruff check src tests` and `pytest` before opening one.
+- [judge-drift-sentinel](https://github.com/homayoun-safarpour/judge-drift-sentinel): tells judge drift from system change on a frozen anchor set.
+- [judge-field-guide](https://github.com/homayoun-safarpour/judge-field-guide): a link-checked map of tools for LLM judges.
 
 ## Citation
+
+Use the "Cite this repository" button on GitHub, or:
 
 ```bibtex
 @software{safarpour_judge_reliability_kit_2026,
