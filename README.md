@@ -108,7 +108,7 @@ In REC001 every judge repeats itself and they still disagree, whereas in REC002 
 |---|---|
 | `judgekit.agreement` | `fleiss_kappa`, `cohen_kappa`, `krippendorff_alpha` (skipped items as `None`), `pairwise_kappas`, `percent_agreement`, and `interpret_kappa` (Landis and Koch bands) |
 | `judgekit.decompose` | Per-item verdicts with an action for each, plus intra-judge and inter-judge agreement for the panel |
-| `judgekit.probes` | `position_bias`, `verbosity_bias` and `self_enhancement_bias`, which change one thing that should not matter and call your own `score_fn` or `compare_fn` |
+| `judgekit.probes` | `position_bias`, `verbosity_bias` and `self_enhancement_bias`, which change one thing that should not matter and call your own `score_fn` or `compare_fn`, and `scale_direction_bias`, which reads recorded scores |
 | `judgekit.report` | `markdown_report`, which opens with the diagnosis and the action |
 | `judgekit.cli` | The `judgekit report` command and its exit code |
 
@@ -116,12 +116,26 @@ In REC001 every judge repeats itself and they still disagree, whereas in REC002 
 
 `python examples/worked_example.py` prints the bare kappa beside the decomposition, and `python examples/ambiguous_item_demo.py` shows one hedged item marked `item_ambiguous`. Both rewrite their output files in `examples/`.
 
+### Scale-direction probe
+
+`scale_direction_bias` asks whether a judge follows the rubric's meaning or just favours a large number. Score each item twice: once with the rubric as written, and once with the same rubric with the scale reversed, so that the best anchor carries the lowest number. The probe maps each reversed score back (`max + min - score`) and reports the mean absolute gap as a share of the scale width. It flags the judge at 0.10 or more, a tenth of the scale (0.4 points on 1 to 5). The idea comes from the scale-reversal probe in [arXiv:2611.25588](https://arxiv.org/abs/2611.25588).
+
+```python
+from judgekit import scale_direction_bias
+
+scores = {"q1": (5, 5), "q2": (4, 5)}  # item: (normal scale, reversed scale)
+print(scale_direction_bias(scores, scale_min=1, scale_max=5))
+```
+
+A judge that gives the top number on either scale is flagged (`test_scale_direction_flags_numeric_prior`), and a judge whose reversed scores map back exactly is not (`test_scale_direction_passes_faithful_judge`).
+
 Interview pack: [docs/INTERVIEW.md](docs/INTERVIEW.md), five talking points and three questions.
 
 ## Limits
 
 - It is not a judge or a benchmark. It never calls a model, so you bring the ratings, or a `score_fn` for the probes.
 - The thresholds are starting points and are not calibrated for your label space. Self-consistency (0.8) and consensus (0.6) are command-line flags, whereas the 0.6 kappa for the exit code is fixed in the code. The report lists at most 20 contested items.
+- `scale_direction_bias` needs the reversed-scale ratings to be collected: you run your judge a second time with the reversed rubric and pass in both scores. It does not apply the paper's floor normalisation against each judge's own run-to-run noise, so a noisy judge can be flagged for noise alone.
 - The bundled panel is a small constructed example (36 items, three judges, four ratings each), not data from a production system.
 - `examples/ambiguous_item_fixture.json` holds the item text beside the ratings, so `judgekit report` cannot read it directly. Use `examples/ambiguous_item_demo.py` for it.
 - Its one runtime dependency is numpy, and it needs Python 3.10 or later. CI runs `ruff check src tests` and `pytest` on Python 3.10, 3.11 and 3.12.
