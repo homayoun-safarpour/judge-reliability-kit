@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 from judgekit.cli import main
@@ -30,3 +31,22 @@ def test_readme_first_screen_matches_top100_craft():
 def test_readme_stranger_report_is_untrusted():
     code = main(["report", str(RATINGS)])
     assert code == 1
+
+
+def test_readme_first_screen_output_is_real(capsys):
+    shown = README.split("```text\n", 1)[1].split("```", 1)[0].splitlines()
+    main(["report", str(RATINGS)])
+    printed = capsys.readouterr().out.splitlines()
+    assert len(shown) >= 7
+    assert printed[: len(shown)] == shown
+
+
+def test_readme_clean_panel_exits_zero(tmp_path):
+    clean = {
+        f"item{i}": {j: [label, label] for j in ("a", "b", "c")}
+        for i, label in enumerate(["include", "exclude", "include", "exclude"])
+    }
+    path = tmp_path / "clean.json"
+    path.write_text(json.dumps(clean), encoding="utf-8")
+    assert main(["report", str(path)]) == 0
+    assert "Fleiss kappa 0.6 or above | 0 |" in README
