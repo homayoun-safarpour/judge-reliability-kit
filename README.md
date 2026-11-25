@@ -38,7 +38,7 @@ Those are the first lines of the report it prints. The rest adds the share of ea
 |---|---|---|
 | Fleiss kappa 0.6 or above | 0 | The judges agree with each other on a single pass. |
 | Fleiss kappa below 0.6 | 1 | The panel is not reliable yet. The report names the dominant cause and an action for each contested item. |
-| Bad input | 1 | Not a JSON object, one judge only, or one rating per judge per item. The command stops with an error message. |
+| Bad input | 1 | Not a JSON object of label lists, one judge only, fewer than two ratings from a judge on an item, a judge missing from an item, fewer than two items, or one label for every first rating (kappa undefined). The command stops with a one-line error message. |
 | Missing or wrong arguments | 2 | Usage error from the command line parser. |
 
 The exit code depends only on the single-pass kappa. Each item also gets a verdict in the report:
@@ -48,7 +48,7 @@ The exit code depends only on the single-pass kappa. Each item also gets a verdi
 | `clean` | Every judge repeats itself, and the judges agree | Nothing |
 | `item_ambiguous` | Mean self-consistency on the item is below 0.8 | The task: allow abstain, route to a human, or leave the item out of scoring |
 | `rubric_underspecified` | Every judge repeats itself, but cross-judge consensus is below 0.6 | The rubric: pin the disputed clause and add a boundary example |
-| `judge_unstable` | One judge's self-consistency across all items is below 0.4, and every item marked ambiguous is relabelled | The judge: lower the temperature, fix the prompt, or replace the model |
+| `judge_unstable` | One judge's self-consistency across all items is below half the self-consistency threshold (0.4 by default), and every item marked ambiguous is relabelled | The judge: lower the temperature, fix the prompt, or replace the model |
 
 Exit 0 shows that the judges agree with each other. It does not show that they agree with a human or that their labels are correct. The claim limits are in [`docs/RELIABILITY_CARD.md`](docs/RELIABILITY_CARD.md).
 
@@ -137,7 +137,6 @@ Interview pack: [docs/INTERVIEW.md](docs/INTERVIEW.md), five talking points and 
 - The thresholds are starting points and are not calibrated for your label space. Self-consistency (0.8) and consensus (0.6) are command-line flags, whereas the 0.6 kappa for the exit code is fixed in the code. The report lists at most 20 contested items.
 - `scale_direction_bias` needs the reversed-scale ratings to be collected: you run your judge a second time with the reversed rubric and pass in both scores. It does not apply the paper's floor normalisation against each judge's own run-to-run noise, so a noisy judge can be flagged for noise alone.
 - The bundled panel is a small constructed example (36 items, three judges, four ratings each), not data from a production system.
-- `examples/ambiguous_item_fixture.json` holds the item text beside the ratings, so `judgekit report` cannot read it directly. Use `examples/ambiguous_item_demo.py` for it.
 - Its one runtime dependency is numpy, and it needs Python 3.10 or later. CI runs `ruff check src tests` and `pytest` on Python 3.10, 3.11 and 3.12.
 
 ## Use it as a gate in CI

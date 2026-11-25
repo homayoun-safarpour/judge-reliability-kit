@@ -130,6 +130,30 @@ class Decomposition:
         return "\n".join(lines)
 
 
+def _check_shape(ratings: object) -> None:
+    """Refuse anything that is not {item: {judge: [label, ...]}} with scalar labels.
+
+    A label given as a bare string would otherwise be iterated one character at
+    a time and pass the replication check.
+    """
+    if not isinstance(ratings, Mapping) or not ratings:
+        raise ValueError("no ratings supplied: expected {item: {judge: [labels...]}}")
+    for item_id, per_item in ratings.items():
+        if not isinstance(per_item, Mapping) or not per_item:
+            raise ValueError(f"item {item_id!r} must map each judge to a list of labels")
+        for judge, labels in per_item.items():
+            if not isinstance(labels, (list, tuple)) or not labels:
+                raise ValueError(
+                    f"item {item_id!r}, judge {judge!r}: expected a non-empty list of labels"
+                )
+            for label in labels:
+                if not isinstance(label, (str, int, float)):
+                    raise TypeError(
+                        f"item {item_id!r}, judge {judge!r}: each label must be a string "
+                        f"or a number, got {type(label).__name__}"
+                    )
+
+
 def _modal(labels: Sequence[Hashable]) -> Hashable:
     return Counter(labels).most_common(1)[0][0]
 
@@ -171,8 +195,7 @@ def decompose(
     -------
     Decomposition
     """
-    if not ratings:
-        raise ValueError("no ratings supplied")
+    _check_shape(ratings)
 
     judges = sorted({j for per_item in ratings.values() for j in per_item})
     if len(judges) < 2:
@@ -181,12 +204,22 @@ def decompose(
     replicate_counts = {
         len(labels) for per_item in ratings.values() for labels in per_item.values()
     }
-    if max(replicate_counts) < 2:
+    if min(replicate_counts) < 2:
         raise ValueError(
-            "need at least two replicates per judge per item - that is the whole "
-            "point: without replication, ambiguity and underspecification are "
-            "mathematically indistinguishable"
+            "need at least two replicates from every judge on every item - that is "
+            "the whole point: without replication, ambiguity and underspecification "
+            "are mathematically indistinguishable"
         )
+
+    for item_id, per_item in ratings.items():
+        missing = [j for j in judges if j not in per_item]
+        if missing:
+            raise ValueError(
+                f"judge {missing[0]!r} did not rate item {item_id!r}; every judge must "
+                "rate every item, or the kappa would rest on a silent subset"
+            )
+    if len(ratings) < 2:
+        raise ValueError("need at least two items rated by every judge; kappa is undefined")
 
     per_judge_scores: dict[str, list[float]] = {j: [] for j in judges}
     verdicts: list[ItemVerdict] = []
