@@ -15,8 +15,33 @@ def _load(path: Path) -> dict:
     with path.open(encoding="utf-8") as fh:
         data = json.load(fh)
     if not isinstance(data, dict):
-        raise SystemExit("input must be a JSON object: {item: {judge: [labels...]}}")
+        raise TypeError("input must be a JSON object: {item: {judge: [labels...]}}")
+    # A panel may sit under a top-level "ratings" key beside text fields, as in
+    # examples/ambiguous_item_fixture.json.
+    nested = data.get("ratings")
+    if isinstance(nested, dict) and nested and all(isinstance(v, dict) for v in nested.values()):
+        return nested
     return data
+
+
+def _report(args: argparse.Namespace) -> int:
+    ratings = _load(args.ratings)
+    result = decompose(
+        ratings,
+        self_consistency_threshold=args.self_consistency_threshold,
+        consensus_threshold=args.consensus_threshold,
+    )
+    first_pass = {labels[0] for per_item in ratings.values() for labels in per_item.values()}
+    if len(first_pass) < 2:
+        raise ValueError("only one label observed in the first pass; kappa undefined")
+    md = markdown_report(result, title=args.title)
+    if args.out:
+        args.out.write_text(md, encoding="utf-8")
+        print(f"wrote {args.out}")
+    else:
+        print(md)
+    # Non-zero exit when the panel is not trustworthy, so CI can gate on it.
+    return 0 if result.inter_judge_kappa >= 0.6 else 1
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -39,20 +64,13 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     if args.command == "report":
-        ratings = _load(args.ratings)
-        result = decompose(
-            ratings,
-            self_consistency_threshold=args.self_consistency_threshold,
-            consensus_threshold=args.consensus_threshold,
-        )
-        md = markdown_report(result, title=args.title)
-        if args.out:
-            args.out.write_text(md, encoding="utf-8")
-            print(f"wrote {args.out}")
-        else:
-            print(md)
-        # Non-zero exit when the panel is not trustworthy, so CI can gate on it.
-        return 0 if result.inter_judge_kappa >= 0.6 else 1
+        try:
+            return _report(args)
+        except (ValueError, TypeError, OSError) as exc:
+            # json.JSONDecodeError and UnicodeDecodeError are ValueErrors.
+            message = " ".join(str(exc).split())
+            print(f"error: {message}", file=sys.stderr)
+            return 1
     return 0
 
 

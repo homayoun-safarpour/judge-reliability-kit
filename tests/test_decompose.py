@@ -142,6 +142,49 @@ def test_requires_replication():
         decompose(ratings)
 
 
+def test_requires_replication_from_every_judge_on_every_item():
+    ratings = {
+        "item0": {"a": ["include", "exclude"], "b": ["exclude"]},
+        "item1": {"a": ["include"], "b": ["exclude"]},
+    }
+    with pytest.raises(ValueError, match="replicates"):
+        decompose(ratings)
+
+
+def test_string_label_is_not_iterated_as_characters():
+    ratings = {"i1": {"a": "pass", "b": "partial"}, "i2": {"a": "fail", "b": "fair"}}
+    with pytest.raises(ValueError, match="list of labels"):
+        decompose(ratings)
+
+
+def test_requires_every_judge_on_every_item():
+    ratings = {
+        "item0": {"a": _replicate("x"), "b": _replicate("y")},
+        "item1": {"a": _replicate("x"), "b": _replicate("y"), "c": _replicate("x")},
+    }
+    with pytest.raises(ValueError, match="every judge must rate every item"):
+        decompose(ratings)
+
+
+def test_requires_two_items():
+    ratings = {"item0": {"a": _replicate("x"), "b": _replicate("x")}}
+    with pytest.raises(ValueError, match="at least two items"):
+        decompose(ratings)
+
+
+def test_unstable_cutoff_is_half_the_self_consistency_threshold():
+    # Both judges repeat themselves on 2 of 6 replicate pairs (0.333) on every item.
+    # At the default threshold 0.8 the cut-off is 0.4, so the judges are unstable;
+    # at 0.6 the cut-off is 0.3, so the same items stay item_ambiguous.
+    ratings = {
+        f"item{i}": {"a": ["x", "x", "y", "y"], "b": ["y", "y", "x", "x"]} for i in range(4)
+    }
+    assert decompose(ratings).counts[UNSTABLE] == 4
+    relaxed = decompose(ratings, self_consistency_threshold=0.6)
+    assert relaxed.counts[UNSTABLE] == 0
+    assert relaxed.counts[AMBIGUOUS] == 4
+
+
 def test_requires_two_judges():
     ratings = {"item0": {"a": ["include", "include"]}}
     with pytest.raises(ValueError, match="two judges"):
